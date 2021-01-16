@@ -41,6 +41,7 @@ public class ConsultarView extends AbstractJFrame {
     private final JLabel labelWeight = new JLabel("PESO :");
     private final JLabel labelBoxes = new JLabel("CAJAS :");
     private final JLabel labelPallets = new JLabel("TARIMAS :");
+    private final JLabel labelMainTitle = new JLabel("CONSULTAR PRODUCCIÓN");
 
     private final String[] arrStrTitleColums = {"FECHA", "HORA", "MARBETE", "PRODUCTO", "DESCRIPCION", "NUM CARGA", "CAJAS", "PESO TOTAL", "RESPONSABLE"};
     private final Integer[] arrIntSizeColumns = {100, 85, 100, 75, 290, 100, 60, 90, 247};//TAMAÑO DE LAS COLUMNAS
@@ -54,10 +55,12 @@ public class ConsultarView extends AbstractJFrame {
     private static final Font FONT_TOTAL = new Font("Agency FB", Font.BOLD, 21);
     private static final Font FONT_DATE_CHOOSER = new Font("Agency FB", Font.BOLD, 15);
     private static final Font FONT_BUTTON = new Font("Arial", Font.BOLD, 15);
+    private static final Font FONT_MAIN_TITLE = new Font("Arial", Font.BOLD, 30);
 
     private static final Color COLOR_TEXT_LABEL = Color.BLACK;
     private static final Color COLOR_TEXT_TOTAL = new Color(12, 159, 10);
     private static final Color COLOR_TEXT_BUTTON = Color.BLACK;
+    private static final Color COLOR_TEXT_MAIN_TITLE = Color.YELLOW;
     private static final Color COLOR_BORDER_BUTTON = Color.GRAY;
     private static final Color COLOR_BACKGROUND_PANEL_MAIN = new Color(10, 10, 10, 34);
     private static final Color COLOR_BACKGROUND_PANEL_TITLE = new Color(10, 10, 10, 34);
@@ -67,6 +70,7 @@ public class ConsultarView extends AbstractJFrame {
     private static final Integer ALING_TEXT_DATE_CHOOSER = SwingConstants.CENTER;
     private static final Integer ALING_TEXT_COMBOBOX = SwingConstants.LEFT;
     private static final Integer ALING_TEXT_BUTTON = SwingConstants.CENTER;
+    private static final Integer ALING_TEXT_MAIN_TITLE = SwingConstants.CENTER;
 
     private static final String PATH_IMG_XLS = "/com/felder/img/excel.png";
     private static final String PATH_IMG_PDF = "/com/felder/img/pdf.png";
@@ -110,6 +114,8 @@ public class ConsultarView extends AbstractJFrame {
         this.addButton(this.buttonSearch, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 1050, 60, 100, 30);
         this.addButton(this.buttonExcel, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 945, 540, 100, 30);
         this.addButton(this.buttonPdf, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 1050, 540, 100, 30);
+
+        this.addLabel(this.labelMainTitle, FONT_MAIN_TITLE, COLOR_TEXT_MAIN_TITLE, ALING_TEXT_MAIN_TITLE, 10, 10, 1170, 40);
         this.addPanel(this.panelTitle, COLOR_BACKGROUND_PANEL_MAIN, BORDER_PANEL_MAIN, 10, 10, 1170, 40);
         this.addPanel(this.panelMain, COLOR_BACKGROUND_PANEL_TITLE, BORDER_PANEL_TITLE, 10, 10, 1170, 100);
         this.addScrollPane(scrollPaneTableMain, 10, 120, 1170, 390);

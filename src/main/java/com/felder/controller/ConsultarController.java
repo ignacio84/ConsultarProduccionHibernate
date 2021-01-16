@@ -32,6 +32,7 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
     private static final String STR_MSJ_COMBOBOX_DEFAULT = "SELECCIONAR ARTICULO";
     private static final String STR_MSJ_COMBOBOX_ALL = "TODOS";
     private static final DecimalFormat FORMAT_TWO_DECIMAL = new DecimalFormat("###,##0.00");
+    private static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("###,###");
 
     private final IProductService productService;
     private final IProductionService productionService;
@@ -190,7 +191,7 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         Integer suma = this.listProduccion.stream()
                 .mapToInt(data -> data.getTotalCajas())
                 .sum();
-        vConsultar.getLabelTotalBoxes().setText(suma.toString());
+        vConsultar.getLabelTotalBoxes().setText(FORMAT_INTEGER.format(suma));
     }
 
     private void sumPallets() {

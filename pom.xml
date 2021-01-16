@@ -84,7 +84,7 @@
                     <archive>
                         <manifest>
                             //Aqui se establece el nombre de la clase principal
-                            <mainClass>com.felder.main.MConsultarProduccionMaven</mainClass>
+                            <mainClass>com.felder.main.ConsultarProduccion</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
