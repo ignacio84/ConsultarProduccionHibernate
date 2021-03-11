@@ -23,7 +23,6 @@ public class ConsultarView extends AbstractJFrame {
 
     public JComboBox comboProducts = new JComboBox();
     public JButton buttonSearch = new JButton("BUSCAR");
-
     public JButton buttonExcel;
     public JButton buttonPdf;
 
