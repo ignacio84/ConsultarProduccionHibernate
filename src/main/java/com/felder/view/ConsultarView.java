@@ -4,13 +4,16 @@ import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
@@ -21,34 +24,46 @@ public class ConsultarView extends AbstractJFrame {
     private final JPanel panelTitle = new JPanel();
     private final JPanel panelMain = new JPanel();
 
-    public JComboBox comboProducts = new JComboBox();
-    public JButton buttonSearch = new JButton("BUSCAR");
-    public JButton buttonExcel;
-    public JButton buttonPdf;
+    private final JLabel labelDateFrom = new JLabel("FECHA DESDE :");
+    private final JLabel labelDateTo = new JLabel("FECHA HASTA :");
+    private final JLabel labelProducts = new JLabel("PRODUCTO :");
+    private final JLabel labelBatch = new JLabel("LOTE :");
 
-    public JLabel labelTotalWeight = new JLabel("0.00");
-    public JLabel labelTotalBoxes = new JLabel("0");
-    public JLabel labelTotalPallets = new JLabel("0");
+    private final JRadioButton radioButtonPallets = new JRadioButton("Tarimas");
+    private final JRadioButton radioButtonBoxes = new JRadioButton("Cajas");
+    private final ButtonGroup buttonGroup = new ButtonGroup();
 
     private final JDateChooser dateChooserFrom = new JDateChooser();
     private final JDateChooser dateChooserTo = new JDateChooser();
 
-    private final JLabel labelDateFrom = new JLabel("FECHA DESDE :");
-    private final JLabel labelDateTo = new JLabel("FECHA HASTA :");
-    private final JLabel labelProducts = new JLabel("PRODUCTO :");
+    private JComboBox comboProducts = new JComboBox();
+    private JTextField textBatch = new JTextField();
+    private JButton buttonSearch = new JButton("BUSCAR");
 
     private final JLabel labelWeight = new JLabel("PESO :");
     private final JLabel labelBoxes = new JLabel("CAJAS :");
     private final JLabel labelPallets = new JLabel("TARIMAS :");
     private final JLabel labelMainTitle = new JLabel("CONSULTAR PRODUCCIÓN");
 
-    private final String[] arrStrTitleColums = {"FECHA", "HORA", "MARBETE", "PRODUCTO", "DESCRIPCION", "NUM CARGA", "CAJAS", "PESO TOTAL", "RESPONSABLE"};
-    private final Integer[] arrIntSizeColumns = {100, 85, 100, 75, 290, 100, 60, 90, 247};//TAMAÑO DE LAS COLUMNAS
-    public JTable tableMain = this.setPropsTable(arrStrTitleColums, arrIntSizeColumns);
-    private final JScrollPane scrollPaneTableMain = new JScrollPane(tableMain);
+    private JLabel labelTotalWeight = new JLabel("0.00");
+    private JLabel labelTotalBoxes = new JLabel("0");
+    private JLabel labelTotalPallets = new JLabel("0");
 
-    public JFileChooser fileChooserPdf;
-    public JFileChooser fileChooserXlsx;
+    private JButton buttonExcel;
+    private JButton buttonPdf;
+
+    private final String[] arrStrTitleColumsPallets = {"FECHA", "HORA", "MARBETE", "PRODUCTO", "DESCRIPCION", "LOTE", "CAJAS", "PESO TOTAL", "RESPONSABLE"};
+    private final Integer[] arrIntSizeColumnsPallets = {100, 85, 100, 75, 290, 100, 60, 90, 247};//TAMAÑO DE LAS COLUMNAS
+    private JTable tablePallets = this.setPropsTable(arrStrTitleColumsPallets, arrIntSizeColumnsPallets);
+
+    private final String[] arrStrTitleColumsBoxes = {"CODIGO BARRAS", "FECHA", "HORA", "MARBETE", "PRODUCTO", "DESCRIPCION", "LOTE", "PESO", "RESPONSABLE"};
+    private final Integer[] arrIntSizeColumnsBoxes = {175, 100, 75, 115, 62, 280, 100, 60, 180};//TAMAÑO DE LAS COLUMNAS
+    private JTable tableBoxes = this.setPropsTable(arrStrTitleColumsBoxes, arrIntSizeColumnsBoxes);
+
+    private JScrollPane scrollPaneTableMain = new JScrollPane(tablePallets);
+
+    private JFileChooser fileChooserPdf;
+    private JFileChooser fileChooserXlsx;
 
     private static final Font FONT_LABEL = new Font("Agency FB", Font.BOLD, 21);
     private static final Font FONT_TOTAL = new Font("Agency FB", Font.BOLD, 21);
@@ -64,12 +79,10 @@ public class ConsultarView extends AbstractJFrame {
     private static final Color COLOR_BACKGROUND_PANEL_MAIN = new Color(10, 10, 10, 34);
     private static final Color COLOR_BACKGROUND_PANEL_TITLE = new Color(10, 10, 10, 34);
 
-    private static final Integer ALING_TEXT_LABEL = SwingConstants.RIGHT;
-    private static final Integer ALING_TEXT_TOTAL = SwingConstants.LEFT;
-    private static final Integer ALING_TEXT_DATE_CHOOSER = SwingConstants.CENTER;
-    private static final Integer ALING_TEXT_COMBOBOX = SwingConstants.LEFT;
-    private static final Integer ALING_TEXT_BUTTON = SwingConstants.CENTER;
-    private static final Integer ALING_TEXT_MAIN_TITLE = SwingConstants.CENTER;
+    private static final Integer ALING_TEXT_RIGHT = SwingConstants.RIGHT;
+    private static final Integer ALING_TEXT_LEFT = SwingConstants.LEFT;
+
+    private static final Integer ALING_TEXT_CENTER = SwingConstants.CENTER;
 
     private static final String PATH_IMG_XLS = "/com/felder/img/excel.png";
     private static final String PATH_IMG_PDF = "/com/felder/img/pdf.png";
@@ -79,6 +92,7 @@ public class ConsultarView extends AbstractJFrame {
 
     public ConsultarView(String strTit, Integer intAlt, Integer intAncho) {
         super(strTit, intAlt, intAncho);
+        this.radioButtonPallets.setSelected(true);
         this.createFileChooser();
         this.createButtonImages();
         this.addControls();
@@ -98,26 +112,31 @@ public class ConsultarView extends AbstractJFrame {
     }
 
     private void addControls() {
-        this.addDateChooser(dateChooserFrom, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_DATE_CHOOSER, 155, 60, 150, 30);
-        this.addDateChooser(dateChooserTo, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_DATE_CHOOSER, 455, 60, 150, 30);
-        this.addLabel(this.labelDateFrom, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 50, 60, 100, 30);
-        this.addLabel(this.labelDateTo, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 350, 60, 100, 30);
-        this.addLabel(this.labelProducts, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 610, 60, 100, 30);
-        this.addLabel(this.labelWeight, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 30, 515, 80, 30);
-        this.addLabel(this.labelTotalWeight, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_TOTAL, 140, 515, 80, 30);
-        this.addLabel(this.labelBoxes, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 30, 540, 80, 30);
-        this.addLabel(this.labelTotalBoxes, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_TOTAL, 140, 540, 80, 30);
-        this.addLabel(this.labelPallets, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LABEL, 30, 565, 80, 30);
-        this.addLabel(this.labelTotalPallets, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_TOTAL, 140, 565, 80, 30);
-        this.addComboBox(this.comboProducts, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_COMBOBOX, 720, 60, 300, 30);
-        this.addButton(this.buttonSearch, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 1050, 60, 100, 30);
-        this.addButton(this.buttonExcel, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 945, 540, 100, 30);
-        this.addButton(this.buttonPdf, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_BUTTON, 1050, 540, 100, 30);
 
-        this.addLabel(this.labelMainTitle, FONT_MAIN_TITLE, COLOR_TEXT_MAIN_TITLE, ALING_TEXT_MAIN_TITLE, 10, 10, 1170, 40);
+        this.addLabel(this.labelDateFrom, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 50, 60, 100, 30);
+        this.addLabel(this.labelDateTo, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 350, 60, 100, 30);
+        this.addLabel(this.labelProducts, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 610, 60, 100, 30);
+        this.addLabel(this.labelBatch, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 50, 100, 100, 30);
+        this.addLabel(this.labelWeight, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 515, 80, 30);
+        this.addLabel(this.labelTotalWeight, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 515, 80, 30);
+        this.addLabel(this.labelBoxes, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 540, 80, 30);
+        this.addLabel(this.labelTotalBoxes, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 540, 80, 30);
+        this.addLabel(this.labelPallets, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 565, 80, 30);
+        this.addLabel(this.labelTotalPallets, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 565, 80, 30);
+        this.addDateChooser(dateChooserFrom, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_CENTER, 155, 60, 150, 30);
+        this.addDateChooser(dateChooserTo, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_CENTER, 455, 60, 150, 30);
+        this.addComboBox(this.comboProducts, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 720, 60, 300, 30);
+        this.addTextField(this.textBatch, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_CENTER, 155, 100, 150, 30);
+        this.addRadioButton(radioButtonPallets, buttonGroup, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LEFT, 355, 100, 100, 30);
+        this.addRadioButton(radioButtonBoxes, buttonGroup, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_LEFT, 455, 100, 100, 30);
+        this.addButton(this.buttonSearch, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_CENTER, 1050, 60, 100, 30);
+        this.addButton(this.buttonExcel, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_CENTER, 945, 540, 100, 30);
+        this.addButton(this.buttonPdf, FONT_BUTTON, COLOR_TEXT_BUTTON, COLOR_BORDER_BUTTON, ALING_TEXT_CENTER, 1050, 540, 100, 30);
+        this.addLabel(this.labelMainTitle, FONT_MAIN_TITLE, COLOR_TEXT_MAIN_TITLE, ALING_TEXT_CENTER, 10, 10, 1170, 40);
         this.addPanel(this.panelTitle, COLOR_BACKGROUND_PANEL_MAIN, BORDER_PANEL_MAIN, 10, 10, 1170, 40);
-        this.addPanel(this.panelMain, COLOR_BACKGROUND_PANEL_TITLE, BORDER_PANEL_TITLE, 10, 10, 1170, 100);
-        this.addScrollPane(scrollPaneTableMain, 10, 120, 1170, 390);
+        this.addPanel(this.panelMain, COLOR_BACKGROUND_PANEL_TITLE, BORDER_PANEL_TITLE, 10, 10, 1170, 130);
+        this.addScrollPane(scrollPaneTableMain, 10, 150, 1170, 360);
+
     }
 
     public JComboBox getComboProducts() {
@@ -136,8 +155,12 @@ public class ConsultarView extends AbstractJFrame {
         return dateChooserTo;
     }
 
-    public JTable getTableMain() {
-        return tableMain;
+    public JTable getTablePallets() {
+        return tablePallets;
+    }
+
+    public void setTablePallets(JTable tablePallets) {
+        this.tablePallets = tablePallets;
     }
 
     public JButton getButtonExcel() {
@@ -167,4 +190,29 @@ public class ConsultarView extends AbstractJFrame {
     public JFileChooser getFileChooserXlsx() {
         return fileChooserXlsx;
     }
+
+    public JTextField getTextBatch() {
+        return textBatch;
+    }
+
+    public ButtonGroup getButtonGroup() {
+        return buttonGroup;
+    }
+
+    public JRadioButton getRadioButtonPallets() {
+        return radioButtonPallets;
+    }
+
+    public JRadioButton getRadioButtonBoxes() {
+        return radioButtonBoxes;
+    }
+
+    public JTable getTableBoxes() {
+        return tableBoxes;
+    }
+
+    public JScrollPane getScrollPaneTableMain() {
+        return scrollPaneTableMain;
+    }
+
 }

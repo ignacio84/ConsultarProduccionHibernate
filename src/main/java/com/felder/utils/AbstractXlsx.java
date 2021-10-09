@@ -1,4 +1,4 @@
-package com.felder.util;
+package com.felder.utils;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.Cell;

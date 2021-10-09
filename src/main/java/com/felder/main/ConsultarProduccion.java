@@ -1,6 +1,8 @@
 package com.felder.main;
 
 import com.felder.controller.ConsultarController;
+import com.felder.model.entity.Pallet;
+import com.felder.model.service.PalletServiceImpl;
 import java.io.File;
 import java.util.Properties;
 import javax.swing.UIManager;
@@ -33,6 +35,7 @@ public class ConsultarProduccion {
 
     public static void main(String[] args) {
         tema();
+//        System.out.println(new PalletServiceImpl().findById(new Pallet(1)).toString());
         new ConsultarController();
     }
 

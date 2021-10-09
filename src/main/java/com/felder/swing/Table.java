@@ -1,4 +1,4 @@
-package com.felder.util;
+package com.felder.swing;
 
 import java.util.List;
 import javax.swing.table.DefaultTableModel;

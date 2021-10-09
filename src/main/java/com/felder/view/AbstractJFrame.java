@@ -1,6 +1,6 @@
 package com.felder.view;
 
-import com.felder.util.CustomRenderForJCombobox;
+import com.felder.swing.CustomRenderForJCombobox;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Color;
 import java.awt.Component;
@@ -27,9 +27,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.io.InputStream;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JFileChooser;
+import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -180,7 +183,37 @@ public abstract class AbstractJFrame extends JFrame {
         AutoCompleteDecorator.decorate(comboBox);
         comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
         comboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+    
+        /*APLICA FORMATO A CONTROLES JTEXTFIELD */
+    protected void addTextField(JTextField txt, Font font, Color color, Integer aling, Integer x, Integer y, Integer w, Integer h) {
+        this.add(txt);
+        txt.setBounds(x, y, w, h);
+        txt.setHorizontalAlignment(aling);
+        txt.setFont(font);
+        txt.setForeground(color);
+        txt.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+            }
 
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                ((JTextField) e.getSource()).setCursor(new Cursor(Cursor.TEXT_CURSOR));
+            }
+        });
+    }
+    
+        public void addRadioButton(JRadioButton radioButton,ButtonGroup btnGruop, Font font, Color colorText, Integer aling, Integer x, Integer y, Integer w, Integer h) {
+        btnGruop.add(radioButton);
+        radioButton.setHorizontalAlignment(aling);
+        radioButton.setFont(font);
+        radioButton.setForeground(colorText);
+         radioButton.setOpaque(false);
+//        radioButton.setBackground(new Color(0,0,0,0));
+        radioButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        this.add(radioButton);
+        radioButton.setBounds(x, y, w, h);
     }
 
     public JButton createButtonImage(String path) {

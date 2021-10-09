@@ -1,5 +1,5 @@
 
-package com.felder.util;
+package com.felder.utils;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;

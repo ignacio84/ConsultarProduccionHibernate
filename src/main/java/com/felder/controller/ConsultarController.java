@@ -1,24 +1,32 @@
 package com.felder.controller;
-import com.felder.model.pojo.Produccion;
+
+import com.felder.model.entity.Pallet;
+import com.felder.model.service.IPalletService;
 import com.felder.model.service.IProductService;
 import com.felder.model.service.IProductionService;
+import com.felder.model.service.PalletServiceImpl;
 import com.felder.model.service.ProductServiceImpl;
 import com.felder.model.service.ProductionServiceImpl;
-import com.felder.util.DateImpl;
-import com.felder.util.IDate;
-import com.felder.util.IPdf;
-import com.felder.util.ITable;
-import com.felder.util.IXlsx;
-import com.felder.util.PdfImpl;
-import com.felder.util.Table;
-import com.felder.util.XlxsImp;
+import com.felder.swing.DateImpl;
+import com.felder.swing.IDate;
+import com.felder.swing.IPdf;
+import com.felder.swing.ITable;
+import com.felder.swing.PdfImpl;
+import com.felder.swing.Table;
+import com.felder.utils.service.IXlsService;
+import com.felder.utils.service.XlsServiceImpl;
 import com.felder.view.ConsultarView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +35,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class ConsultarController implements ActionListener, PropertyChangeListener {
+public class ConsultarController implements KeyListener, ActionListener, PropertyChangeListener {
+
+    private IPalletService palletService = new PalletServiceImpl();
+    private IXlsService xlsxService = new XlsServiceImpl();
 
     private static final String STR_MSJ_COMBOBOX_DEFAULT = "SELECCIONAR ARTICULO";
     private static final String STR_MSJ_COMBOBOX_ALL = "TODOS";
@@ -38,10 +49,10 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
     private final IProductionService productionService;
     private final ITable table;
     private final IDate date;
-    private final IXlsx xlsx;
     private final IPdf pdf;
 
-    private List<Produccion> listProduccion = new ArrayList<>();
+//    private List<Produccion> listProduccion = new ArrayList<>();
+    private List<Pallet> listPallets = new ArrayList<>();
     private final ConsultarView vConsultar = new ConsultarView(" Felder Foods ( Consultar Produccion )", 650, 1195);
 
     public JFileChooser fileChooserXlsx = new JFileChooser();//directorio donde se guardara 
@@ -52,7 +63,6 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         this.productionService = new ProductionServiceImpl();
         this.table = new Table();
         this.date = new DateImpl();
-        this.xlsx = new XlxsImp();
         this.pdf = new PdfImpl();
         this.loadCombobox();
         this.addListener();
@@ -72,13 +82,17 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         }
     }
 
+    //AGREGA ESCUCHADORES A CONTROLES
     private void addListener() {
         vConsultar.getButtonSearch().addActionListener(this);
         vConsultar.getButtonExcel().addActionListener(this);
         vConsultar.getButtonPdf().addActionListener(this);
         vConsultar.getComboProducts().addActionListener(this);
+        vConsultar.getTextBatch().addKeyListener(this);
         vConsultar.getDateChooserFrom().getDateEditor().addPropertyChangeListener(this);
         vConsultar.getDateChooserTo().getDateEditor().addPropertyChangeListener(this);
+        vConsultar.getRadioButtonPallets().addActionListener(this);
+        vConsultar.getRadioButtonBoxes().addActionListener(this);
     }
 
     @Override
@@ -86,16 +100,30 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         if (e.getSource().equals(vConsultar.getComboProducts())) {
             this.enabledButtonSearch();
         }
+        if (e.getSource().equals(vConsultar.getRadioButtonPallets()) || e.getSource().equals(vConsultar.getRadioButtonBoxes())) {
+            this.loadTables();
+        }
         if (e.getSource().equals(vConsultar.getButtonSearch())) {
             try {
-                this.listProduccion = this.productionService.findProductionByDateAndKey(
-                        this.date.formatingDate(vConsultar.getDateChooserFrom().getDate(), 0, 0, 0),
-                        this.date.formatingDate(vConsultar.getDateChooserTo().getDate(), 23, 59, 59),
-                        vConsultar.getComboProducts().getSelectedItem().toString().split("-")[0].trim().replace(STR_MSJ_COMBOBOX_ALL, "%"));
+                LocalDateTime from = (vConsultar.getDateChooserFrom().getDate() == null) ? LocalDateTime.of(2000, Month.JANUARY, 01, 0, 1)
+                        : vConsultar.getDateChooserFrom().getDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime();
+                LocalDateTime to = (vConsultar.getDateChooserTo().getDate() == null) ? LocalDateTime.now()
+                        : vConsultar.getDateChooserTo().getDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                                .plusHours(23)
+                                .plusMinutes(59)
+                                .plusSeconds(59);
+                String itemCode = vConsultar.getComboProducts().getSelectedItem().toString().split("-")[0].trim().replace(STR_MSJ_COMBOBOX_ALL, "%");
+                String batch = (vConsultar.getTextBatch().getText().trim().length() > 0) ? vConsultar.getTextBatch().getText().trim() : "%";
+                Pallet pallet = new Pallet(itemCode, batch, from, to);//CREA OBJETO DE TIPO PALLET
+                this.listPallets = this.palletService.findByDateAndItemAndBatch(pallet);//REALIZA CONSULTA
                 this.sumPallets();
                 this.sumBoxes();
                 this.sumWeight();
-                this.loadTable();
+                this.loadTables();
                 this.clearForm();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(vConsultar, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -103,16 +131,22 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         }
         if ((e.getSource().equals(vConsultar.getButtonExcel())
                 || e.getSource().equals(vConsultar.getButtonPdf()))
-                && this.listProduccion.size() > 0) {
+                && this.listPallets.size() > 0) {
             this.makeDocument(e.getSource());
         }
     }
 
+    //GENERA DOCUMENTOS PDF, XLSX
     private void makeDocument(Object source) {
         try {
             if (source.equals(vConsultar.getButtonExcel())) {
                 if (vConsultar.getFileChooserXlsx().showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    this.xlsx.makeFromProduccion(this.listProduccion, vConsultar.getFileChooserXlsx().getSelectedFile().getPath());
+                    if (vConsultar.getRadioButtonPallets().isSelected()) {
+                        this.xlsxService.makeFromPallets(listPallets, vConsultar.getFileChooserXlsx().getSelectedFile().getPath());
+                        vConsultar.getFileChooserXlsx().setSelectedFile(new File(""));
+                        return;
+                    }
+                    this.xlsxService.makeFromBoxes(listPallets, vConsultar.getFileChooserXlsx().getSelectedFile().getPath());
                     vConsultar.getFileChooserXlsx().setSelectedFile(new File(""));
                     return;
                 }
@@ -130,30 +164,67 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         }
     }
 
+    //LIMPIA CAMPOS DE BUSQUEDA DEL FORMULARIO
     private void clearForm() {
         vConsultar.getDateChooserFrom().setDate(null);
         vConsultar.getDateChooserTo().setDate(null);
+        vConsultar.getTextBatch().setText("");
         vConsultar.getComboProducts().setSelectedIndex(0);
     }
 
-    private void loadTable() {
+    private void loadTables() {
+        if (vConsultar.getRadioButtonPallets().isSelected()) {
+            this.loadTablePallets();
+            return;
+        }
+        this.loadTableBoxes();
+    }
+
+    private void loadTablePallets() {
         List<Object[]> listObject = new ArrayList<>();
-        this.listProduccion
+        this.listPallets
                 .stream()
                 .forEach((data) -> {
                     listObject.add(new Object[]{
-                        data.getFecha(),
-                        data.getHora(),
+                        data.getFecha().toLocalDate(),
+                        data.getFecha().toLocalTime(),
                         data.getFolio(),
                         data.getCodigoProducto(),
-                        data.getDescripcion(),
-                        data.getCarga(),
-                        data.getTotalCajas(),
+                        data.getLines().get(0).getDescripcion(),
+                        data.getLote(),
+                        data.getNumeroCajas(),
                         FORMAT_TWO_DECIMAL.format(Double.valueOf(data.getPeso())),
                         data.getResponsable()
                     });
                 });
-        this.table.addDataToDefaultTableModel((DefaultTableModel) vConsultar.getTableMain().getModel(), listObject);
+        this.table.addDataToDefaultTableModel((DefaultTableModel) vConsultar.getTablePallets().getModel(), listObject);
+        this.vConsultar.getScrollPaneTableMain().getViewport().add(vConsultar.getTablePallets());
+    }
+
+    private void loadTableBoxes() {
+        List<Object[]> listObject = new ArrayList<>();
+        this.listPallets
+                .stream()
+                .forEach((data) -> {
+                    data.getLines()
+                            .stream()
+                            .forEach((d) -> {
+                                listObject.add(new Object[]{
+                                    d.getCodigoBarras(),
+                                    data.getFecha().toLocalDate(),
+                                    data.getFecha().toLocalTime(),
+                                    data.getFolio(),
+                                    data.getCodigoProducto(),
+                                    data.getLines().get(0).getDescripcion(),
+                                    data.getLote(),
+                                    FORMAT_TWO_DECIMAL.format(Double.valueOf(d.getPeso())),
+                                    data.getResponsable()
+                                });
+                            });
+                });
+
+        this.table.addDataToDefaultTableModel((DefaultTableModel) vConsultar.getTableBoxes().getModel(), listObject);
+        this.vConsultar.getScrollPaneTableMain().getViewport().add(vConsultar.getTableBoxes());
     }
 
     public void propertyChange(PropertyChangeEvent e) {
@@ -169,34 +240,53 @@ public class ConsultarController implements ActionListener, PropertyChangeListen
         }
     }
 
+    //ACTIVA Y DESACTIVA BOTON BUSCAR
     private void enabledButtonSearch() {
         if (vConsultar.getDateChooserFrom().getDate() != null
                 && vConsultar.getDateChooserTo().getDate() != null
                 && vConsultar.getComboProducts().getSelectedIndex() > 0) {
             vConsultar.getButtonSearch().setEnabled(true);
-            return;
+            return;//CON LA FUNCION RETURN SE SALE DEL METODO Y NO EXECUTA EL RESTO DEL CODIGO
+        }
+        if (vConsultar.getTextBatch().getText().trim().length() > 0
+                && vConsultar.getComboProducts().getSelectedIndex() > 0) {
+            vConsultar.getButtonSearch().setEnabled(true);
+            return;//CON LA FUNCION RETURN SE SALE DEL METODO Y NO EXECUTA EL RESTO DEL CODIGO
         }
         vConsultar.getButtonSearch().setEnabled(false);
 
     }
 
     private void sumWeight() {
-        Double suma = this.listProduccion.stream()
+        Double suma = this.listPallets.stream()
                 .mapToDouble(data -> Double.valueOf(data.getPeso()))
                 .sum();
         vConsultar.getLabelTotalWeight().setText(FORMAT_TWO_DECIMAL.format(suma));
     }
 
     private void sumBoxes() {
-        Integer suma = this.listProduccion.stream()
-                .mapToInt(data -> data.getTotalCajas())
+        Integer suma = this.listPallets.stream()
+                .mapToInt(data -> data.getNumeroCajas())
                 .sum();
         vConsultar.getLabelTotalBoxes().setText(FORMAT_INTEGER.format(suma));
     }
 
     private void sumPallets() {
 //        Integer suma = this.listProduccion.stream().map(Produccion::getFolio).distinct().collect(Collectors.toList()).size();
-        vConsultar.getLabelTotalPallets().setText(String.valueOf(this.listProduccion.size()));
+        vConsultar.getLabelTotalPallets().setText(String.valueOf(this.listPallets.size()));
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        this.enabledButtonSearch();
     }
 
 }

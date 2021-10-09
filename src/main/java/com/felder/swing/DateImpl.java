@@ -1,4 +1,4 @@
-package com.felder.util;
+package com.felder.swing;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
