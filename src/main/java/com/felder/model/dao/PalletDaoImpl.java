@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PalletDaoImpl extends AbstractEntityManagerFactory implements IPalletDao {
 
-    private final String UNIT_MYSQL_SCANNER1 = "mysql_scanner1";
+    
 
     @Override
     public Pallet findById(Pallet pallet) {

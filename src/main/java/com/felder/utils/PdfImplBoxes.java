@@ -17,7 +17,8 @@ import java.util.List;
 
 public class PdfImplBoxes extends AbstractPdf implements IPdf<List<Pallet>, String> {
 
-    private static final float FLT_SIZECOLUMNS[] = new float[]{25, 20, 25, 20, 100, 30, 20, 25, 25};
+//    private static final float FLT_SIZECOLUMNS[] = new float[]{25, 20, 25, 20, 100, 30, 20, 25, 25};
+    private static final float FLT_SIZECOLUMNS[] = new float[]{45, 20, 25, 20, 20, 90, 25, 25, 35};
     private final Font FNT_TABLE_TITLE = new Font(Font.FontFamily.UNDEFINED, 6, Font.BOLD, new BaseColor(0, 0, 0));
     private final Font FNT_TABLE_CONTENT = new Font(Font.FontFamily.UNDEFINED, 6, Font.NORMAL, new BaseColor(0, 0, 0));
     private final Rectangle INT_PAGE_SIZE = PageSize.LETTER;
@@ -62,8 +63,8 @@ public class PdfImplBoxes extends AbstractPdf implements IPdf<List<Pallet>, Stri
         this.table.addCell(this.getCell("FECHA", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
         this.table.addCell(this.getCell("HORA", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
         this.table.addCell(this.getCell("MARBETE", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
-        this.table.addCell(this.getCell("PRODUCTO", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
-        this.table.addCell(this.getCell("DESCRIPCION", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
+        this.table.addCell(this.getCell("CODIGO PRODUCTO", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
+        this.table.addCell(this.getCell("DESCRIPCIÒN", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
         this.table.addCell(this.getCell("LOTE", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
         this.table.addCell(this.getCell("PESO", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
         this.table.addCell(this.getCell("RESPONSABLE", BACKGROUND_COLOR_TITLE, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_TITLE, 1, 1, 15));
@@ -82,8 +83,8 @@ public class PdfImplBoxes extends AbstractPdf implements IPdf<List<Pallet>, Stri
                                 table.addCell(this.getCell(pallet.getFolio().toString(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
                                 table.addCell(this.getCell(pallet.getCodigoProducto(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
                                 table.addCell(this.getCell(pallet.getLines().get(0).getDescripcion(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
-                                table.addCell(this.getCell(box.getPeso(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
-                                table.addCell(this.getCell(FORMAT_TWO_DECIMAL.format(Double.valueOf(pallet.getPeso())), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
+                                table.addCell(this.getCell(pallet.getLote(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
+                                table.addCell(this.getCell(FORMAT_TWO_DECIMAL.format(Double.valueOf(box.getPeso())), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
                                 table.addCell(this.getCell(pallet.getResponsable(), BACKGROUND_COLOR_CONTENT, PdfPCell.ALIGN_CENTER, PdfPCell.ALIGN_MIDDLE, FNT_TABLE_CONTENT, 1, 1, 15));
                             });
                 });
@@ -104,7 +105,6 @@ public class PdfImplBoxes extends AbstractPdf implements IPdf<List<Pallet>, Stri
     }
 
     private String sumBoxes() {
-
 
         Integer suma = this.listPallets.stream()
                 .mapToInt(data -> data.getNumeroCajas())

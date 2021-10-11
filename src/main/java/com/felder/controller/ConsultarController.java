@@ -1,19 +1,17 @@
 package com.felder.controller;
 
 import com.felder.model.entity.Pallet;
+import com.felder.model.service.IItemService;
 import com.felder.model.service.IPalletService;
-import com.felder.model.service.IProductService;
-import com.felder.model.service.IProductionService;
+import com.felder.model.service.ItemServiceImpl;
 import com.felder.model.service.PalletServiceImpl;
-import com.felder.model.service.ProductServiceImpl;
-import com.felder.model.service.ProductionServiceImpl;
 import com.felder.swing.DateImpl;
 import com.felder.swing.IDate;
-import com.felder.swing.IPdf;
 import com.felder.swing.ITable;
-import com.felder.swing.PdfImpl;
 import com.felder.swing.Table;
+import com.felder.utils.service.IPdfService;
 import com.felder.utils.service.IXlsService;
+import com.felder.utils.service.PdfServiceImpl;
 import com.felder.utils.service.XlsServiceImpl;
 import com.felder.view.ConsultarView;
 import java.awt.event.ActionEvent;
@@ -37,19 +35,18 @@ import javax.swing.table.DefaultTableModel;
 
 public class ConsultarController implements KeyListener, ActionListener, PropertyChangeListener {
 
+    private IItemService itemService = new ItemServiceImpl();
     private IPalletService palletService = new PalletServiceImpl();
     private IXlsService xlsxService = new XlsServiceImpl();
+    private IPdfService pdfService = new PdfServiceImpl();
 
     private static final String STR_MSJ_COMBOBOX_DEFAULT = "SELECCIONAR ARTICULO";
     private static final String STR_MSJ_COMBOBOX_ALL = "TODOS";
     private static final DecimalFormat FORMAT_TWO_DECIMAL = new DecimalFormat("###,##0.00");
     private static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("###,###");
 
-    private final IProductService productService;
-    private final IProductionService productionService;
     private final ITable table;
     private final IDate date;
-    private final IPdf pdf;
 
 //    private List<Produccion> listProduccion = new ArrayList<>();
     private List<Pallet> listPallets = new ArrayList<>();
@@ -59,11 +56,8 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
     public JFileChooser fileChooserPdf = new JFileChooser();//directorio donde se guardara 
 
     public ConsultarController() {
-        this.productService = new ProductServiceImpl();
-        this.productionService = new ProductionServiceImpl();
         this.table = new Table();
         this.date = new DateImpl();
-        this.pdf = new PdfImpl();
         this.loadCombobox();
         this.addListener();
     }
@@ -71,7 +65,7 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
     //METODO CARGA INFORMACION DE PEDIDOS EN EL COMBOBOX
     private void loadCombobox() {
         try {
-            List<String> listProducts = this.productService.getAll()
+            List<String> listProducts = this.itemService.findAll()
                     .stream()
                     .map(data -> data.getClaveProducto() + " - " + data.getDescripcion()).collect(Collectors.toList());
             listProducts.add(0, STR_MSJ_COMBOBOX_DEFAULT);
@@ -153,7 +147,12 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
             }
             if (source.equals(vConsultar.getButtonPdf())) {
                 if (vConsultar.getFileChooserPdf().showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    this.pdf.makeFromProduccion(this.listProduccion, vConsultar.getFileChooserPdf().getSelectedFile().getPath());
+                    if (vConsultar.getRadioButtonPallets().isSelected()) {
+                        this.pdfService.makeFromPallets(this.listPallets, vConsultar.getFileChooserPdf().getSelectedFile().getPath());
+                        vConsultar.getFileChooserPdf().setSelectedFile(new File(""));
+                        return;
+                    }
+                    this.pdfService.makeFromBoxes(this.listPallets, vConsultar.getFileChooserPdf().getSelectedFile().getPath());
                     vConsultar.getFileChooserPdf().setSelectedFile(new File(""));
                     return;
                 }
@@ -288,5 +287,4 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
     public void keyReleased(KeyEvent e) {
         this.enabledButtonSearch();
     }
-
 }

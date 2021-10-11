@@ -82,7 +82,7 @@ public class XlsxImplBoxes extends AbstractXlsx implements IXlsx<List<Pallet>, S
 
     private void renderTotal() {
         this.row = sheet.createRow(this.row.getRowNum() + 1);
-        this.addCellFormula(8, "SUM(I" + (INT_ROW_START + 2) + ":I" + (INT_ROW_START + 1 + this.row.getRowNum()-(INT_ROW_START+1)) + ")", this.cellStyleContent(STR_DECIMAL_FORMAT));
+//        this.addCellFormula(8, "SUM(I" + (INT_ROW_START + 2) + ":I" + (INT_ROW_START + 1 + this.row.getRowNum()-(INT_ROW_START+1)) + ")", this.cellStyleContent(STR_DECIMAL_FORMAT));
         this.addCellFormula(9, "SUM(J" + (INT_ROW_START + 2) + ":J" + (INT_ROW_START + 1 + this.row.getRowNum()-(INT_ROW_START+1)) + ")", this.cellStyleContent(STR_DECIMAL_FORMAT));
     }
 

@@ -5,6 +5,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 abstract class AbstractEntityManagerFactory {
+    
+    protected final String UNIT_MYSQL_SCANNER1 = "mysql_scanner1";
 
     protected EntityManagerFactory emf;
     protected EntityManager em;
