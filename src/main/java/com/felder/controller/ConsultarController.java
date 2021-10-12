@@ -48,7 +48,6 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
     private final ITable table;
     private final IDate date;
 
-//    private List<Produccion> listProduccion = new ArrayList<>();
     private List<Pallet> listPallets = new ArrayList<>();
     private final ConsultarView vConsultar = new ConsultarView(" Felder Foods ( Consultar Produccion )", 650, 1195);
 
@@ -60,6 +59,7 @@ public class ConsultarController implements KeyListener, ActionListener, Propert
         this.date = new DateImpl();
         this.loadCombobox();
         this.addListener();
+        this.vConsultar.setVisible(true);
     }
 
     //METODO CARGA INFORMACION DE PEDIDOS EN EL COMBOBOX

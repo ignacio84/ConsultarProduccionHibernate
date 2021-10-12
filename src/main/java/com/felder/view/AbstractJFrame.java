@@ -65,8 +65,7 @@ public abstract class AbstractJFrame extends JFrame {
         this.setResizable(false);
         this.setFocusable(true);
         this.setIconApp();
-        this.setVisible(true);
-
+//        this.setVisible(true);
     }
 
     private void setIconApp() {

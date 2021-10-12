@@ -3,7 +3,7 @@
   <persistence-unit name="mysql_scanner1">
     <class>com.felder.model.entity.Pallet</class>
     <class>com.felder.model.entity.Item</class>
-    <shared-cache-mode>NONE</shared-cache-mode>
+    <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
     <validation-mode>NONE</validation-mode>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://192.168.1.5:3306/scanner1?useSSL=false&amp;useTimezone=true&amp;serverTimezone=UTC"/>

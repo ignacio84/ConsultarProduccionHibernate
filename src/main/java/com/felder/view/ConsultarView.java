@@ -118,11 +118,11 @@ public class ConsultarView extends AbstractJFrame {
         this.addLabel(this.labelProducts, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 610, 60, 100, 30);
         this.addLabel(this.labelBatch, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 50, 100, 100, 30);
         this.addLabel(this.labelWeight, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 515, 80, 30);
-        this.addLabel(this.labelTotalWeight, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 515, 80, 30);
+        this.addLabel(this.labelTotalWeight, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 515, 140, 30);
         this.addLabel(this.labelBoxes, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 540, 80, 30);
-        this.addLabel(this.labelTotalBoxes, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 540, 80, 30);
+        this.addLabel(this.labelTotalBoxes, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 540, 140, 30);
         this.addLabel(this.labelPallets, FONT_LABEL, COLOR_TEXT_LABEL, ALING_TEXT_RIGHT, 30, 565, 80, 30);
-        this.addLabel(this.labelTotalPallets, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 565, 80, 30);
+        this.addLabel(this.labelTotalPallets, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 140, 565, 140, 30);
         this.addDateChooser(dateChooserFrom, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_CENTER, 155, 60, 150, 30);
         this.addDateChooser(dateChooserTo, "yyyy-MM-dd", FONT_DATE_CHOOSER, ALING_TEXT_CENTER, 455, 60, 150, 30);
         this.addComboBox(this.comboProducts, FONT_TOTAL, COLOR_TEXT_TOTAL, ALING_TEXT_LEFT, 720, 60, 300, 30);
