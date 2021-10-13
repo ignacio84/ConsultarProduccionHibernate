@@ -16,13 +16,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Entity
 @NamedQueries({
     @NamedQuery(name = "Pallet.findByBatch", query = " SELECT p FROM Pallet p WHERE p.lote=:lote "),
-    @NamedQuery(name = "Pallet.findByItemAndBatch", query = " SELECT p FROM Pallet p where p.codigoProducto = :codigoProducto  AND  p.lote = :lote "),
-})
+    @NamedQuery(name = "Pallet.findByItemAndBatch", query = " SELECT p FROM Pallet p where p.codigoProducto = :codigoProducto  AND  p.lote = :lote "),})
 @Table(name = "ingr_enc")
 public class Pallet implements Serializable {
 
@@ -57,7 +58,7 @@ public class Pallet implements Serializable {
     @Column(name = "int_en_temp")
     private String temperatura;
 
-    @Column(name = "in_en_fecproc")
+    @Column(name = "in_en_fecproc", columnDefinition="DATETIME")
     private LocalDateTime fecha;
 
     @Column(name = "in_en_taracaja")
@@ -198,8 +199,6 @@ public class Pallet implements Serializable {
     public void setTo(LocalDateTime to) {
         this.to = to;
     }
-
-
 
     public String getTaraCaja() {
         return taraCaja;

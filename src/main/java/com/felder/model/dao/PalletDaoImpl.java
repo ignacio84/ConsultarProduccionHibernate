@@ -28,7 +28,8 @@ public class PalletDaoImpl extends AbstractEntityManagerFactory implements IPall
     public List<Pallet> findByDateAndItemAndBatch(Pallet pallet) {
         List<Pallet> pallets = new ArrayList<>();
         this.begin(UNIT_MYSQL_SCANNER1);
-        pallets = em.createQuery(" SELECT p FROM Pallet p JOIN FETCH p.lines WHERE p.fecha BETWEEN :from AND :to AND p.codigoProducto LIKE :codigoProducto  AND  p.lote LIKE :lote ")
+//        pallets = em.createQuery(" SELECT p FROM Pallet p JOIN FETCH p.lines WHERE p.fecha BETWEEN :from AND :to AND p.codigoProducto LIKE :codigoProducto  AND  p.lote LIKE :lote ")
+        pallets = em.createQuery(" SELECT p FROM Pallet p WHERE p.fecha BETWEEN :from AND :to AND p.codigoProducto LIKE :codigoProducto  AND  p.lote LIKE :lote ")
                 .setParameter("codigoProducto", pallet.getCodigoProducto())
                 .setParameter("lote", pallet.getLote())
                 .setParameter("from", pallet.getFrom())
